@@ -36,7 +36,7 @@ namespace PluginPantry
 
         public IEnumerable<PluginMetadata> LoadPluginAssembly(string assemblyFile)
         {
-            var assembly = Assembly.LoadFile(assemblyFile);
+            var assembly = Assembly.LoadFrom(assemblyFile);
             foreach (var type in assembly.ExportedTypes)
             {
                 if (!type.IsAssignableTo(PluginBaseType))
