@@ -16,6 +16,6 @@ namespace PluginPantry.Extending
 
     public interface IEntryPointContext
     {
-        public PluginInformation PluginInformation { get; }
+        public PluginInformation PluginInformation { get; set; }
     }
 }
