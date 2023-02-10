@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace PluginPantry
 
     internal static class Util
     {
-        public static MethodInvocationResults TryInvokeMatchingMethod<TModel>(MethodInfo targetMethod, object? targetInstance, TModel? targetModel)
+        public static (MethodInvocationResults Status, object? ReturnVal) TryInvokeMatchingMethod<TModel>(MethodInfo targetMethod, object? targetInstance, TModel? targetModel)
         {
             var modelType = typeof(TModel);
             var passedArgs = new List<object?>();
@@ -24,7 +25,7 @@ namespace PluginPantry
 
             if(targetInstance == null && !targetMethod.IsStatic)
             {
-                return MethodInvocationResults.ExpectedStaticMethod;
+                return (MethodInvocationResults.ExpectedStaticMethod, null);
             }
 
             foreach (var param in targetMethod.GetParameters())
@@ -69,11 +70,11 @@ namespace PluginPantry
 
             if (!signatureFound)
             {
-                return MethodInvocationResults.Failed;
+                return (MethodInvocationResults.Failed, null);
             }
 
-            targetMethod.Invoke(targetInstance, passedArgs.ToArray());
-            return MethodInvocationResults.Succeeded;
+            var val = targetMethod.Invoke(targetInstance, passedArgs.ToArray());
+            return (MethodInvocationResults.Succeeded, val);
         }
 
         public static bool TryGetParamValues<TModel>(IEnumerable<ParameterInfo> parameters, TModel? targetModel, List<object?> values)

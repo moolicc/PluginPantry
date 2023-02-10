@@ -9,47 +9,23 @@ namespace PluginPantry
 {
     public class PluginMetadata
     {
-        public PluginContext? OwningContext { get; internal set; }
+        public Guid Uid { get; private set; }
 
-        public string Name { get; private set; }
-        public Version Version { get; private set; }
-        public Type EntryType { get; private set; }
+        public Dictionary<string, string> Parameters { get; private set; }
+
         public MethodInfo EntryPoint { get; private set; }
-        public string AssemblyPath { get; private set; }
-
-        public string Id => CreateId(this);
 
 
-        internal PluginMetadata(string name, Version version, Type entryType, MethodInfo entryPoint, string assemblyPath)
+        internal PluginMetadata(Dictionary<string, string> parameters, MethodInfo entryPoint)
+            : this(Guid.NewGuid(), parameters, entryPoint)
         {
-            Name = name;
-            Version = version;
-            EntryType = entryType;
-            EntryPoint = entryPoint;
-            AssemblyPath = assemblyPath;
         }
 
-        private static string CreateId(PluginMetadata plugin)
+        internal PluginMetadata(Guid uid, Dictionary<string, string> parameters, MethodInfo entryPoint)
         {
-            var builder = new StringBuilder();
-            for (int i = 0; i < plugin.Name.Length; i++)
-            {
-                char curChar = plugin.Name[i];
-
-                if (char.IsWhiteSpace(curChar)
-                    || char.IsSymbol(curChar))
-                {
-                    curChar = '.';
-                }
-                builder.Append(curChar);
-            }
-
-            builder.Append(plugin.Version.Major).Append('.');
-            builder.Append(plugin.Version.Minor).Append('.');
-            builder.Append(plugin.Version.Build).Append('.');
-            builder.Append(plugin.Version.Revision);
-
-            return builder.ToString();
+            Uid = uid;
+            Parameters = parameters;
+            EntryPoint = entryPoint;
         }
     }
 }

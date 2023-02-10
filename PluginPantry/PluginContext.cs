@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,178 +10,130 @@ namespace PluginPantry
 {
     public class PluginContext
     {
-        internal Exposed Exposed { get; set; }
-
-
-        private List<PluginMetadata> _loadedPlugins;
+        private List<PluginMetadata> _plugins;
 
         public PluginContext()
         {
-            Exposed = new Exposed(this);
-            _loadedPlugins = new List<PluginMetadata>();
-        }
-
-        ~PluginContext()
-        {
-
-        }
-
-        public void IncludePlugins(IEnumerable<PluginMetadata> plugins)
-        {
-            foreach (var item in plugins)
+            _plugins = new List<PluginMetadata>
             {
-                IncludePlugin(item);
+                // TODO: This could be an error. The explicit !s.
+                new PluginMetadata(Guid.Empty, new Dictionary<string, string>(), Assembly.GetEntryAssembly()!.EntryPoint!)
+            };
+        }
+
+        public IEnumerable<PluginMetadata> GetPlugins()
+            => _plugins.ToArray();
+
+        public void RunPlugin(PluginMetadata metadata, params object[] args)
+        {
+            _plugins.Add(metadata);
+            metadata.EntryPoint.Invoke(null, args);
+        }
+
+
+
+        public void RegisterAction<TAction, TOwner>(Guid pluginId, TOwner? instance, string functionName)
+        {
+            Type type = typeof(TOwner);
+            MethodInfo? method = type.GetMethod(functionName);
+
+            if(method == null)
+            {
+                throw new InvalidOperationException("Failed to bind action. Method not found.");
             }
+
+            PluginAction action = new PluginAction()
+            {
+                Instance = instance,
+                Method = method,
+                PluginId = pluginId
+            };
+            RegisterAction<TAction>(action);
         }
 
-        public void IncludePlugin(PluginMetadata plugin)
+        private void RegisterAction<TAction>(PluginAction action)
         {
-            if(plugin.OwningContext != null)
-            {
-                throw new KeyNotFoundException("Plugin already has an associated context.");
-            }
-            plugin.OwningContext = this;
-            _loadedPlugins.Add(plugin);
+            ActionTable<TAction>.ForPluginContext(this).AddAction(action);
         }
 
-        public void RemovePluginsByAssembly(string assembly)
+        public void RegisterExtension<TBase, TImpl>(Guid pluginId, TImpl implementation) where TImpl : TBase
         {
-            for (int i = 0; i < _loadedPlugins.Count; i++)
+            ExtensionTable<TBase>.ForPluginContext(this).AddExtension(pluginId, implementation);
+        }
+
+
+
+
+        public IEnumerable<ActionResult<TActionReturn>> RunAction<TAction, TActionReturn>(TAction model)
+        {
+            foreach (var action in ActionTable<TAction>.ForPluginContext(this).GetActions())
             {
-                if (_loadedPlugins[i].AssemblyPath == assembly)
+                ActionResult<TActionReturn> result;
+                try
                 {
-                    RemovePlugin(_loadedPlugins[i]);
-                    i--;
+                    var returnVal = Util.TryInvokeMatchingMethod(action.Method, action.Instance, model);
+                    if (returnVal.Status != MethodInvocationResults.Succeeded)
+                    {
+                        throw new InvalidOperationException($"Failed to execute action for plugin {action.PluginId}.");
+                    }
+
+                    result = new ActionResult<TActionReturn>
+                    {
+                        Exception = null,
+                        ReturnValue = (TActionReturn?)returnVal.ReturnVal
+                    };
                 }
+                catch (Exception ex)
+                {
+                    result = new ActionResult<TActionReturn>
+                    { Exception = ex };
+                }
+                yield return result;
             }
         }
 
-        public void RemovePlugin(string pluginId)
+        public void RunAction<TAction, TActionReturn>(TAction model, Action<ActionResult<TActionReturn>> onActionComplete)
         {
-            var plugin = CheckPluginId(pluginId);
-            RemovePlugin(plugin);
-        }
-
-        public void RemovePlugin(PluginMetadata plugin)
-        {
-            EndPointRunner.StopPluginTasks(plugin.Id);
-            EndPointTable.RemovePlugin(plugin.Id);
-            _loadedPlugins.Remove(plugin);
-            plugin.OwningContext = null;
-        }
-
-        public void BeginPluginExecution<TEntryPointContext>(TEntryPointContext context)
-            where TEntryPointContext : Extending.IEntryPointContext
-        {
-            foreach (var plugin in _loadedPlugins)
+            foreach (var action in ActionTable<TAction>.ForPluginContext(this).GetActions())
             {
-                BeginPluginExecution(plugin, context);
+                ActionResult<TActionReturn> result;
+                try
+                {
+                    var returnVal = Util.TryInvokeMatchingMethod(action.Method, action.Instance, model);
+                    if (returnVal.Status != MethodInvocationResults.Succeeded)
+                    {
+                        throw new InvalidOperationException($"Failed to execute action for plugin {action.PluginId}.");
+                    }
+
+                    result = new ActionResult<TActionReturn>
+                    {
+                        Exception = null,
+                        ReturnValue = (TActionReturn?)returnVal.ReturnVal
+                    };
+                }
+                catch (Exception ex)
+                {
+                    result = new ActionResult<TActionReturn>
+                    { Exception = ex };
+                }
+                onActionComplete(result);
             }
         }
 
-        public void BeginPluginExecution<TEntryPointContext>(Func<TEntryPointContext> contextFactory)
-            where TEntryPointContext : Extending.IEntryPointContext
+
+
+
+
+        public IEnumerable<TBase> GetExtensions<TBase>()
         {
-            foreach (var plugin in _loadedPlugins)
-            {
-                BeginPluginExecution(plugin, contextFactory());
-            }
+            return ExtensionTable<TBase>.ForPluginContext(this).GetExtensions();
         }
 
-        public void BeginPluginExecution<TEntryPointContext>(string pluginId, TEntryPointContext context)
-            where TEntryPointContext : Extending.IEntryPointContext
+        public void WithExtensions<TBase>(Action<TBase> action)
         {
-            var plugin = CheckPluginId(pluginId);
-            BeginPluginExecution(plugin, context);
-        }
-
-        public void BeginPluginExecution<TEntryPointContext>(PluginMetadata plugin, TEntryPointContext context)
-            where TEntryPointContext : Extending.IEntryPointContext
-        {
-            CheckPluginOwner(plugin);
-            object? createdInstance = null;
-            if(plugin.EntryType.GetConstructors().Any(c => !c.IsStatic))
+            foreach(var item in ExtensionTable<TBase>.ForPluginContext(this).GetExtensions())
             {
-                createdInstance = Activator.CreateInstance(plugin.EntryType);
-            }
-
-            if (createdInstance == null && !plugin.EntryPoint.IsStatic)
-            {
-                throw new EntryPointNotFoundException();
-            }
-
-            if(context.PluginInformation == null)
-            {
-                context.PluginInformation = new Extending.PluginInformation();
-            }
-
-            if (context.PluginInformation.Exposed != null && context.PluginInformation.Exposed != Exposed)
-            {
-                throw new InvalidOperationException("The same entry point exposure point cannot be shared across plugin contexts.");
-            }
-            context.PluginInformation.Exposed = Exposed;
-            context.PluginInformation.PluginObject = createdInstance;
-            context.PluginInformation.PluginType = plugin.EntryType;
-            context.PluginInformation.PluginId = plugin.Id;
-
-            var invocationResult = Util.TryInvokeMatchingMethod(plugin.EntryPoint, createdInstance, context);
-            if (invocationResult == MethodInvocationResults.Failed)
-            {
-                // TODO
-            }
-            else if (invocationResult == MethodInvocationResults.ExpectedStaticMethod)
-            {
-                // TODO
-            }
-        }
-
-        public void ExecuteEndPoint<TEndPointContext>(TEndPointContext? context)
-        {
-            ExecuteEndPoint(() => context);
-        }
-
-        public void ExecuteEndPoint<TEndPointContext>(Func<TEndPointContext?> contextCreator)
-        {
-            EndPointRunner<TEndPointContext>.ForPluginContext(this).InvokeEndPoint(contextCreator);
-        }
-
-        public bool GetEndPointExecutionFinished<TEndPointContext>()
-            => EndPointRunner<TEndPointContext>.ForPluginContext(this).LastInvocationCompleted;
-
-        public async Task WaitForEndPointExecutionAsync<TEndPointContext>()
-        {
-            while (!GetEndPointExecutionFinished<TEndPointContext>())
-            {
-                await Task.Delay(100);
-            }
-        }
-
-        public IEnumerable<TBase> GetImplementations<TBase>()
-        {
-            return ImplementationTable<TBase>.ForPluginContext(this).GetInstances();
-        }
-
-        public void CreateDynamicImplementations<TBase, TContext>(TContext? context)
-        {
-            DynamicImplementationTable<TBase>.ForPluginContext(this).CreateInstances(context);
-        }
-
-
-        private PluginMetadata CheckPluginId(string id)
-        {
-            var plugin = _loadedPlugins.FirstOrDefault(p => p.Id == id);
-            if (plugin == null)
-            {
-                throw new KeyNotFoundException("The specified plugin could not be found or is not associated with this context.");
-            }
-            return plugin;
-        }
-
-        private void CheckPluginOwner(PluginMetadata plugin)
-        {
-            if (plugin.OwningContext != this)
-            {
-                throw new KeyNotFoundException("The specified plugin is associated with this context.");
+                action(item);
             }
         }
     }
