@@ -11,15 +11,23 @@ namespace PluginPantry
     {
         public KeyValuePair<string, string>[] Parameters { get; }
 
-        public EntryPointAttribute(params KeyValuePair<string, string>[] args)
+        public EntryPointAttribute()
         {
-            Parameters = args;
+            Parameters = new KeyValuePair<string, string>[0];
         }
 
-
-        public EntryPointAttribute(params (string Key, string Value)[] args)
+        public EntryPointAttribute(params string[] args)
         {
-            Parameters = args.Select(a => new KeyValuePair<string, string>(a.Key, a.Value)).ToArray();
+            if(args.Length % 2 != 0)
+            {
+                throw new InvalidOperationException("Invalid metadata. Metadata must be provided in pairs of strings representing keys and their corresponding values.");
+            }
+
+            Parameters = new KeyValuePair<string, string>[args.Length / 2];
+            for (int i = 0; i < args.Length; i += 2)
+            {
+                Parameters[i / 2] = new KeyValuePair<string, string>(args[i], args[i + 1]);
+            }
         }
     }
 }

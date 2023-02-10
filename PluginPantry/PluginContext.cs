@@ -24,12 +24,11 @@ namespace PluginPantry
         public IEnumerable<PluginMetadata> GetPlugins()
             => _plugins.ToArray();
 
-        public void RunPlugin(PluginMetadata metadata, params object[] args)
+        public void RegisterPlugin(PluginMetadata metadata, params object[] args)
         {
             _plugins.Add(metadata);
             metadata.EntryPoint.Invoke(null, args);
         }
-
 
 
         public void RegisterAction<TAction, TOwner>(Guid pluginId, TOwner? instance, string functionName)
