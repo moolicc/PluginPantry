@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PluginPantry;
 
-namespace PluginPantry.Tests.Plugins
+
+namespace PluginPantryTests.Plugins
 {
     public class EntryPoints_WithBadMetadata
     {
@@ -32,6 +34,10 @@ namespace PluginPantry.Tests.Plugins
             Called = true;
         }
 
+        public static void MainWithNoAttributeAndParams(PluginContext context, Guid guid)
+        {
+            Called = true;
+        }
 
         [EntryPoint]
         public static void MainWithEmptyAttribute()
@@ -40,7 +46,7 @@ namespace PluginPantry.Tests.Plugins
         }
 
         [EntryPoint]
-        public static void MainWithEmptyAttributeAndParams(Guid id, PluginPantry.PluginContext context)
+        public static void MainWithEmptyAttributeAndParams(Guid id, PluginContext context)
         {
             Called = true;
         }
@@ -62,7 +68,7 @@ namespace PluginPantry.Tests.Plugins
         
 
         [EntryPoint("name", "myplugin", "version", "1.0")]
-        public static void MainWithGoodMetadataAndParams(Guid id, PluginPantry.PluginContext context)
+        public static void MainWithGoodMetadataAndParams(Guid id, PluginContext context)
         {
             Called = true;
         }

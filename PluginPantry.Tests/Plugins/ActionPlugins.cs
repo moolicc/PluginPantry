@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluginPantry.Tests.Plugins
+namespace PluginPantryTests.Plugins
 {
     internal class ActionPlugins
     {
 
         [EntryPoint("name", "myplugin", "version", "1.0")]
-        public static void Main()
+        public static void MainEntryPoint()
         {
 
         }

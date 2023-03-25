@@ -29,7 +29,21 @@ namespace PluginPantry
         {
             try
             {
-                metadata.ExecuteEntryPoint(args);
+                var p = new object[args.Length + 2];
+
+                if(metadata.EntryPointContextFirst)
+                {
+                    p[0] = this;
+                    p[1] = metadata.Uid;
+                }
+                else
+                {
+                    p[0] = metadata.Uid;
+                    p[1] = this;
+                }
+                Array.Copy(args, 0, p, 2, args.Length);
+                
+                metadata.ExecuteEntryPoint(p);
             }
             catch (Exception ex)
             {

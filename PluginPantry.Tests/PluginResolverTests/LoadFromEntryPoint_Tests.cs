@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluginPantry.Tests.PluginResolverTests
+namespace PluginPantryTests.PluginResolverTests
 {
     [TestFixture]
     public class LoadFromEntryPoint_Tests
@@ -25,10 +25,10 @@ namespace PluginPantry.Tests.PluginResolverTests
         }
 
         [Test]
-        public void LoadFromEntryPoint_WithoutAttribute_NoScheme_Loads()
+        public void LoadFromEntryPoint_WithoutAttribute_NoScheme_WithParams_Loads()
         {
             Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
-            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithNoAttribute")!;
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithNoAttributeAndParams")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
 
@@ -42,6 +42,20 @@ namespace PluginPantry.Tests.PluginResolverTests
                 Assert.IsEmpty(loaded.Parameters);
                 Assert.That(entryPoint, Is.EqualTo(loaded.EntryPoint));
                 Assert.That(loaded.Uid, Is.Not.EqualTo(Guid.Empty));
+            });
+        }
+
+        [Test]
+        public void LoadFromEntryPoint_WithoutAttribute_NoScheme_WithoutParams_Fails()
+        {
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithNoAttribute")!;
+            PluginResolver resolver = new PluginResolver();
+            resolver.MetadataSchema = new PluginMetadataSchema();
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                resolver.LoadFromEntryPoint(entryPoint);
             });
         }
 
@@ -201,7 +215,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         public void LoadFromEntryPoint_WithAttribute_NoScheme_WithoutParams_Fails()
         {
             Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
-            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadataAndParams")!;
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
 

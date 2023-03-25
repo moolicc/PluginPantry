@@ -32,24 +32,6 @@ namespace PluginPantry
                         continue;
                     }
 
-                    if(method.GetParameters().Length < 2)
-                    {
-                        throw new InvalidOperationException("Plugin entry point must contain at least two parameters accepting a PluginContext and Guid.");
-                    }
-
-                    var param = method.GetParameters();
-                    bool hasContextParam = param[0].ParameterType == typeof(PluginContext) || param[1].ParameterType == typeof(PluginContext);
-                    bool hasIdParam = param[0].ParameterType == typeof(Guid) || param[1].ParameterType == typeof(Guid);
-
-                    if(!hasContextParam)
-                    {
-                        throw new InvalidOperationException("Plugin entry point must contain a parameter accepting a PluginContext.");
-                    }
-                    if (!hasIdParam)
-                    {
-                        throw new InvalidOperationException("Plugin entry point must contain a parameter accepting a Guid.");
-                    }
-
                     // Return this plugin's information.
                     yield return LoadFromEntryPoint(method);
                 }
@@ -74,6 +56,26 @@ namespace PluginPantry
 
         public PluginMetadata LoadFromEntryPoint(MethodInfo method)
         {
+            // Ensure the entry point contains at least a PluginContext and Guid parameter set.
+            if (method.GetParameters().Length < 2)
+            {
+                throw new InvalidOperationException("Plugin entry point must contain at least two parameters accepting a PluginContext and Guid.");
+            }
+
+            var param = method.GetParameters();
+            bool hasContextParam = param[0].ParameterType == typeof(PluginContext) || param[1].ParameterType == typeof(PluginContext);
+            bool hasIdParam = param[0].ParameterType == typeof(Guid) || param[1].ParameterType == typeof(Guid);
+
+            if (!hasContextParam)
+            {
+                throw new InvalidOperationException("Plugin entry point must contain a parameter accepting a PluginContext.");
+            }
+            if (!hasIdParam)
+            {
+                throw new InvalidOperationException("Plugin entry point must contain a parameter accepting a Guid.");
+            }
+
+
             var attrib = method.GetCustomAttribute<EntryPointAttribute>();
 
             Dictionary<string, string> parameters;
@@ -110,7 +112,7 @@ namespace PluginPantry
                 throw new InvalidOperationException("Plugin is entry point must be static.");
             }
 
-            return new PluginMetadata(parameters, method);
+            return new PluginMetadata(parameters, method) { EntryPointContextFirst = param[0].ParameterType == typeof(PluginContext) };
         }
     }
 }

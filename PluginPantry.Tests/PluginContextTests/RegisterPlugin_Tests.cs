@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluginPantry.Tests.PluginContextTests
+namespace PluginPantryTests.PluginContextTests
 {
     [TestFixture]
     public class RegisterPlugin_Tests

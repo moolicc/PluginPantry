@@ -15,6 +15,8 @@ namespace PluginPantry
 
         public MethodInfo EntryPoint { get; private set; }
 
+        internal bool EntryPointContextFirst;
+
         private bool _executed;
 
 

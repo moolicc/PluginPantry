@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluginPantry.Tests.Plugins
+namespace PluginPantryTests.Plugins
 {
     public class EntryPoints
     {
@@ -13,14 +13,14 @@ namespace PluginPantry.Tests.Plugins
 
 
         [EntryPoint("name", "myplugin", "version", "1.0")]
-        public static void MainNoParams()
+        public static void MainNoParams(PluginContext context, Guid id)
         {
             Called = true;
         }
 
 
         [EntryPoint("name", "myplugin", "version", "1.0")]
-        public static void Main(string s1)
+        public static void MainWithParams(PluginContext context, Guid id, string s1)
         {
             Called = true;
         }
