@@ -59,7 +59,7 @@ namespace PluginPantry
             var attrib = method.GetCustomAttribute<EntryPointAttribute>();
 
             Dictionary<string, string> parameters;
-            if (attrib == null)
+            if (attrib == null || attrib.Parameters.Length == 0)
             {
                 parameters = new Dictionary<string, string>();
             }

@@ -26,8 +26,15 @@ namespace PluginPantry
 
         public void RegisterPlugin(PluginMetadata metadata, params object[] args)
         {
+            try
+            {
+                metadata.ExecuteEntryPoint(args);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to invoke plugin entry point.", ex);
+            }
             _plugins.Add(metadata);
-            metadata.EntryPoint.Invoke(null, args);
         }
 
 

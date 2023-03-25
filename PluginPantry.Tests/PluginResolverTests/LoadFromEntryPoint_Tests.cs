@@ -13,7 +13,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithoutAttribute_NonStatic_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("NonStatic")!;
             PluginResolver resolver = new PluginResolver();
 
@@ -27,7 +27,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithoutAttribute_NoScheme_Loads()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithNoAttribute")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
@@ -48,7 +48,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithoutAttribute_ConcreteScheme_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithNoAttribute")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("testkey");
@@ -62,7 +62,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithoutAttribute_DynamicScheme_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithNoAttribute")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(_ => false));
@@ -80,7 +80,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithEmptyAttribute_NonStatic_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("NonStaticWithEmptyAttrib")!;
             PluginResolver resolver = new PluginResolver();
 
@@ -94,7 +94,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithEmptyAttribute_NoScheme_Loads()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithEmptyAttribute")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
@@ -115,7 +115,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithEmptyAttribute_ConcreteScheme_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithEmptyAttribute")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("testkey");
@@ -129,7 +129,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithEmptyAttribute_DynamicScheme_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithEmptyAttribute")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(_ => false));
@@ -147,7 +147,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithAttribute_InvalidMetadata_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithBadMetada")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
@@ -161,7 +161,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithAttribute_NoScheme_Loads()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
@@ -185,7 +185,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithAttribute_InvalidConcreteScheme_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("testkey");
@@ -199,7 +199,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithAttribute_InvalidDynamicScheme_Fails()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(_ => false));
@@ -215,7 +215,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithAttribute_ValidConcreteScheme_Loads()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("name", "version");
@@ -238,7 +238,7 @@ namespace PluginPantry.Tests.PluginResolverTests
         [Test]
         public void LoadFromEntryPoint_WithAttribute_ValidDynamicScheme_Loads()
         {
-            Type entryPointNoParamsType = typeof(Plugins.EntryPointNoParams);
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(d => d.ContainsKey("name")));

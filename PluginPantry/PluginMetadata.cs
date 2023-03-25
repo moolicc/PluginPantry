@@ -15,6 +15,8 @@ namespace PluginPantry
 
         public MethodInfo EntryPoint { get; private set; }
 
+        private bool _executed;
+
 
         internal PluginMetadata(Dictionary<string, string> parameters, MethodInfo entryPoint)
             : this(Guid.NewGuid(), parameters, entryPoint)
@@ -26,6 +28,16 @@ namespace PluginPantry
             Uid = uid;
             Parameters = parameters;
             EntryPoint = entryPoint;
+        }
+
+        public void ExecuteEntryPoint(params object[] args)
+        {
+            if(_executed)
+            {
+                throw new InvalidOperationException("Plugin entry point already invoked!");
+            }
+            _executed = true;
+            EntryPoint?.Invoke(this, args);
         }
     }
 }

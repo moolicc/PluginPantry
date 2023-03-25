@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PluginPantry.Tests.Plugins
 {
-    public class EntryPointNoParams
+    public class EntryPoints_WithBadMetadata
     {
         public static bool Called = false;
 
