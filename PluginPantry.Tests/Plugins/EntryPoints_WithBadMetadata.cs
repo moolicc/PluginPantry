@@ -39,6 +39,12 @@ namespace PluginPantry.Tests.Plugins
             Called = true;
         }
 
+        [EntryPoint]
+        public static void MainWithEmptyAttributeAndParams(Guid id, PluginPantry.PluginContext context)
+        {
+            Called = true;
+        }
+
 
         [EntryPoint("name", "myplugin", "version")]
         public static void MainWithBadMetada()
@@ -49,6 +55,14 @@ namespace PluginPantry.Tests.Plugins
 
         [EntryPoint("name", "myplugin", "version", "1.0")]
         public static void MainWithGoodMetadata()
+        {
+            Called = true;
+        }
+
+        
+
+        [EntryPoint("name", "myplugin", "version", "1.0")]
+        public static void MainWithGoodMetadataAndParams(Guid id, PluginPantry.PluginContext context)
         {
             Called = true;
         }

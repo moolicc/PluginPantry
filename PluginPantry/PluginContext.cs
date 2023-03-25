@@ -38,17 +38,6 @@ namespace PluginPantry
             _plugins.Add(metadata);
         }
 
-        public void RegisterAction<TAction, TOwner>(TOwner? instance, string functionName)
-        {
-            var currentPluginId = GetPluginIdByEntryPointOnStack();
-            if (currentPluginId == null)
-            {
-                throw new InvalidOperationException("Failed to resolve current plugin's ID.");
-            }
-            RegisterAction<TAction, TOwner>(currentPluginId.Value, instance, functionName); 
-        }
-
-
         public void RegisterAction<TAction, TOwner>(Guid pluginId, TOwner? instance, string functionName)
         {
             Type type = typeof(TOwner);
@@ -71,16 +60,6 @@ namespace PluginPantry
         private void RegisterAction<TAction>(PluginAction action)
         {
             ActionTable<TAction>.ForPluginContext(this).AddAction(action);
-        }
-
-        public void RegisterExtension<TBase, TImpl>(TImpl implementation) where TImpl : TBase
-        {
-            var currentPluginId = GetPluginIdByEntryPointOnStack();
-            if(currentPluginId == null)
-            {
-                throw new InvalidOperationException("Failed to resolve current plugin's ID.");
-            }
-            RegisterExtension<TBase, TImpl>(currentPluginId.Value, implementation);
         }
 
         public void RegisterExtension<TBase, TImpl>(Guid pluginId, TImpl implementation) where TImpl : TBase
@@ -162,28 +141,6 @@ namespace PluginPantry
             {
                 action(item);
             }
-        }
-
-        private Guid? GetPluginIdByEntryPointOnStack()
-        {
-            var callStack = new StackTrace();
-
-            foreach (var frame in callStack.GetFrames())
-            {
-                if(!frame.HasMethod())
-                {
-                    continue;
-                }
-                foreach (var plugin in _plugins)
-                {
-                    if(frame.GetMethod() == plugin.EntryPoint)
-                    {
-                        return plugin.Uid;
-                    }
-                }
-            }
-
-            return null;
         }
     }
 }

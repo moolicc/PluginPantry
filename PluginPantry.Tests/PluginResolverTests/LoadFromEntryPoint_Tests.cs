@@ -92,10 +92,10 @@ namespace PluginPantry.Tests.PluginResolverTests
         }
 
         [Test]
-        public void LoadFromEntryPoint_WithEmptyAttribute_NoScheme_Loads()
+        public void LoadFromEntryPoint_WithEmptyAttribute_NoScheme_WithParams_Loads()
         {
             Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
-            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithEmptyAttribute")!;
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithEmptyAttributeAndParams")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
 
@@ -109,6 +109,21 @@ namespace PluginPantry.Tests.PluginResolverTests
                 Assert.IsEmpty(loaded.Parameters);
                 Assert.That(entryPoint, Is.EqualTo(loaded.EntryPoint));
                 Assert.That(loaded.Uid, Is.Not.EqualTo(Guid.Empty));
+            });
+        }
+
+        [Test]
+        public void LoadFromEntryPoint_WithEmptyAttribute_NoScheme_WithoutParams_Fails()
+        {
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithEmptyAttribute")!;
+            PluginResolver resolver = new PluginResolver();
+            resolver.MetadataSchema = new PluginMetadataSchema();
+
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                resolver.LoadFromEntryPoint(entryPoint);
             });
         }
 
@@ -159,10 +174,10 @@ namespace PluginPantry.Tests.PluginResolverTests
         }
 
         [Test]
-        public void LoadFromEntryPoint_WithAttribute_NoScheme_Loads()
+        public void LoadFromEntryPoint_WithAttribute_NoScheme_WithParams_Loads()
         {
             Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
-            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadataAndParams")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
 
@@ -179,6 +194,20 @@ namespace PluginPantry.Tests.PluginResolverTests
                 Assert.That(loaded.Parameters, Contains.Key("version"));
                 Assert.That(loaded.Parameters, Contains.Value("myplugin"));
                 Assert.That(loaded.Parameters, Contains.Value("1.0"));
+            });
+        }
+
+        [Test]
+        public void LoadFromEntryPoint_WithAttribute_NoScheme_WithoutParams_Fails()
+        {
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadataAndParams")!;
+            PluginResolver resolver = new PluginResolver();
+            resolver.MetadataSchema = new PluginMetadataSchema();
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                resolver.LoadFromEntryPoint(entryPoint);
             });
         }
 
@@ -213,10 +242,10 @@ namespace PluginPantry.Tests.PluginResolverTests
 
 
         [Test]
-        public void LoadFromEntryPoint_WithAttribute_ValidConcreteScheme_Loads()
+        public void LoadFromEntryPoint_WithAttribute_ValidConcreteScheme_WithParams_Loads()
         {
             Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
-            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadataAndParams")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("name", "version");
 
@@ -236,10 +265,24 @@ namespace PluginPantry.Tests.PluginResolverTests
         }
 
         [Test]
-        public void LoadFromEntryPoint_WithAttribute_ValidDynamicScheme_Loads()
+        public void LoadFromEntryPoint_WithAttribute_ValidConcreteScheme_WithoutParams_Fails()
         {
             Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
             MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
+            PluginResolver resolver = new PluginResolver();
+            resolver.MetadataSchema = new PluginMetadataSchema("name", "version");
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                resolver.LoadFromEntryPoint(entryPoint);
+            });
+        }
+
+        [Test]
+        public void LoadFromEntryPoint_WithAttribute_ValidDynamicScheme_WithParams_Loads()
+        {
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadataAndParams")!;
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(d => d.ContainsKey("name")));
 
@@ -257,5 +300,19 @@ namespace PluginPantry.Tests.PluginResolverTests
             });
         }
 
+        [Test]
+        public void LoadFromEntryPoint_WithAttribute_ValidDynamicScheme_WithoutParams_Fails()
+        {
+            Type entryPointNoParamsType = typeof(Plugins.EntryPoints_WithBadMetadata);
+            MethodInfo entryPoint = entryPointNoParamsType.GetMethod("MainWithGoodMetadata")!;
+            PluginResolver resolver = new PluginResolver();
+            resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(d => d.ContainsKey("name")));
+
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                resolver.LoadFromEntryPoint(entryPoint);
+            });
+        }
     }
 }
