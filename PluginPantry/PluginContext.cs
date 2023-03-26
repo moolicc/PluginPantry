@@ -87,6 +87,12 @@ namespace PluginPantry
             ActionTable<TAction>.ForPluginContext(this).AddAction(action);
         }
 
+
+        public void RegisterExtension<TBase, TImpl>(Guid pluginId) where TImpl : TBase
+        {
+            RegisterExtension<TBase, TImpl>(pluginId, Activator.CreateInstance<TImpl>());
+        }
+
         public void RegisterExtension<TBase, TImpl>(Guid pluginId, TImpl implementation) where TImpl : TBase
         {
             ExtensionTable<TBase>.ForPluginContext(this).AddExtension(pluginId, implementation);

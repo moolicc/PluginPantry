@@ -20,7 +20,7 @@ namespace PluginPantry
             MetadataSchema = PluginMetadataSchema.Default;
         }
 
-        public IEnumerable<PluginMetadata> LoadPlugins(Assembly assembly)
+        public IEnumerable<PluginLoadResult> LoadPlugins(Assembly assembly)
         {
             foreach (var type in assembly.ExportedTypes)
             {
@@ -32,8 +32,18 @@ namespace PluginPantry
                         continue;
                     }
 
-                    // Return this plugin's information.
-                    yield return LoadFromEntryPoint(method);
+                    // Return this plugin's information, if successful.
+                    PluginLoadResult result;
+                    try
+                    {
+                        PluginMetadata metadata = LoadFromEntryPoint(method);
+                        result = new PluginLoadResult() { Exception = null, LoadedData = metadata };
+                    }
+                    catch (Exception ex)
+                    {
+                        result = new PluginLoadResult() { Exception = ex, LoadedData = null };
+                    }
+                    yield return result;
                 }
             }
         }
