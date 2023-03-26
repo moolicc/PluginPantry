@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PluginPantry
 {
-    internal class AssemblyResolver
+    public class AssemblyResolver
     {
         public static Assembly LoadAssembly(string baseDirectory, string assemblyFile)
         {
