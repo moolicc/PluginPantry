@@ -59,7 +59,7 @@ namespace PluginPantry
             // Ensure the entry point contains at least a PluginContext and Guid parameter set.
             if (method.GetParameters().Length < 2)
             {
-                throw new InvalidOperationException("Plugin entry point must contain at least two parameters accepting a PluginContext and Guid.");
+                throw new PluginLoadException("Plugin entry point must contain at least two parameters accepting a PluginContext and Guid.");
             }
 
             var param = method.GetParameters();
@@ -68,11 +68,11 @@ namespace PluginPantry
 
             if (!hasContextParam)
             {
-                throw new InvalidOperationException("Plugin entry point must contain a parameter accepting a PluginContext.");
+                throw new PluginLoadException("Plugin entry point must contain a parameter accepting a PluginContext.");
             }
             if (!hasIdParam)
             {
-                throw new InvalidOperationException("Plugin entry point must contain a parameter accepting a Guid.");
+                throw new PluginLoadException("Plugin entry point must contain a parameter accepting a Guid.");
             }
 
 
@@ -93,7 +93,7 @@ namespace PluginPantry
             {
                 if (!MetadataSchema.IsValidCallback(parameters))
                 {
-                    throw new InvalidOperationException("Plugin has invalid signature.");
+                    throw new PluginLoadException("Plugin has invalid signature.");
                 }
             }
             else
@@ -102,14 +102,14 @@ namespace PluginPantry
                 {
                     if (!parameters.ContainsKey(reqArg))
                     {
-                        throw new InvalidOperationException("Plugin is missing required argument.");
+                        throw new PluginLoadException("Plugin is missing required argument.");
                     }
                 }
             }
 
             if (!method.IsStatic)
             {
-                throw new InvalidOperationException("Plugin is entry point must be static.");
+                throw new PluginLoadException("Plugin is entry point must be static.");
             }
 
             return new PluginMetadata(parameters, method) { EntryPointContextFirst = param[0].ParameterType == typeof(PluginContext) };

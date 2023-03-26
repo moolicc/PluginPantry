@@ -15,10 +15,19 @@ namespace PluginPantry
 
         public PluginContext()
         {
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if(entryAssembly == null)
+            {
+                throw new PluginException("Failed to find entry assembly for default plugin.");
+            }
+            if(entryAssembly.EntryPoint == null)
+            {
+                throw new PluginException("Failed to find program entry point for default plugin.");
+            }
+
             _plugins = new List<PluginMetadata>
             {
-                // TODO: This could be an error. The explicit !s.
-                new PluginMetadata(Guid.Empty, new Dictionary<string, string>(), Assembly.GetEntryAssembly()!.EntryPoint!)
+                new PluginMetadata(Guid.Empty, new Dictionary<string, string>(), entryAssembly.EntryPoint)
             };
         }
 
@@ -47,7 +56,7 @@ namespace PluginPantry
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to invoke plugin entry point.", ex);
+                throw new PluginException("Failed to invoke plugin entry point.", ex);
             }
             _plugins.Add(metadata);
         }
@@ -59,7 +68,7 @@ namespace PluginPantry
 
             if(method == null)
             {
-                throw new InvalidOperationException("Failed to bind action. Method not found.");
+                throw new PluginException("Failed to bind action. Method not found.");
             }
 
             PluginAction action = new PluginAction()
@@ -94,7 +103,7 @@ namespace PluginPantry
                     var returnVal = Util.TryInvokeMatchingMethod(action.Method, action.Instance, model);
                     if (returnVal.Status != MethodInvocationResults.Succeeded)
                     {
-                        throw new InvalidOperationException($"Failed to execute action for plugin {action.PluginId}.");
+                        throw new PluginException($"Failed to execute action for plugin {action.PluginId}.");
                     }
 
                     result = new ActionResult<TActionReturn>
@@ -122,7 +131,7 @@ namespace PluginPantry
                     var returnVal = Util.TryInvokeMatchingMethod(action.Method, action.Instance, model);
                     if (returnVal.Status != MethodInvocationResults.Succeeded)
                     {
-                        throw new InvalidOperationException($"Failed to execute action for plugin {action.PluginId}.");
+                        throw new PluginException($"Failed to execute action for plugin {action.PluginId}.");
                     }
 
                     result = new ActionResult<TActionReturn>

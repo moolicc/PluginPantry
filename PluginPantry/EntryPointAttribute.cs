@@ -20,7 +20,7 @@ namespace PluginPantry
         {
             if(args.Length % 2 != 0)
             {
-                throw new InvalidOperationException("Invalid metadata. Metadata must be provided in pairs of strings representing keys and their corresponding values.");
+                throw new PluginException("Invalid metadata. Metadata must be provided in pairs of strings representing keys and their corresponding values.");
             }
 
             Parameters = new KeyValuePair<string, string>[args.Length / 2];
