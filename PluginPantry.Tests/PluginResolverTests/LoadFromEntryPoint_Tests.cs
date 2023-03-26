@@ -18,7 +18,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
 
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -53,7 +53,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -67,7 +67,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("testkey");
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -81,7 +81,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(_ => false));
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -99,7 +99,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
 
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -135,7 +135,7 @@ namespace PluginPantryTests.PluginResolverTests
             resolver.MetadataSchema = new PluginMetadataSchema();
 
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -149,7 +149,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("testkey");
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -163,7 +163,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(_ => false));
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -181,7 +181,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -219,7 +219,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema();
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -233,7 +233,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("testkey");
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -247,7 +247,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(_ => false));
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -286,7 +286,7 @@ namespace PluginPantryTests.PluginResolverTests
             PluginResolver resolver = new PluginResolver();
             resolver.MetadataSchema = new PluginMetadataSchema("name", "version");
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });
@@ -323,7 +323,7 @@ namespace PluginPantryTests.PluginResolverTests
             resolver.MetadataSchema = new PluginMetadataSchema(new PluginValidCallback(d => d.ContainsKey("name")));
 
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginLoadException>(() =>
             {
                 resolver.LoadFromEntryPoint(entryPoint);
             });

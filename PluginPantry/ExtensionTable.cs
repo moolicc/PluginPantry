@@ -44,14 +44,9 @@ namespace PluginPantry
 
         internal void AddExtension<TSub>(Guid pluginId, TSub instance) where TSub : TBase
         {
-            AddExtension(pluginId, instance);
-        }
-
-        internal void AddExtension(Guid pluginId, object instance)
-        {
-            if(_extensionImplementations.TryGetValue(pluginId, out var table))
+            if (_extensionImplementations.TryGetValue(pluginId, out var table))
             {
-                table.Add(instance);
+                table.Add(instance!);
             }
             else
             {

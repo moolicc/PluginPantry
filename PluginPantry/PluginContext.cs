@@ -61,10 +61,12 @@ namespace PluginPantry
             _plugins.Add(metadata);
         }
 
-        public void RegisterAction<TAction, TOwner>(Guid pluginId, TOwner? instance, string functionName)
+        public void RegisterAction<TAction, TOwner>(Guid pluginId, string functionName, TOwner? owningInstance = default)
+            => RegisterAction<TAction>(pluginId, functionName, typeof(TOwner), owningInstance);
+
+        public void RegisterAction<TAction>(Guid pluginId, string functionName, Type owningType, object? owningInstance = null)
         {
-            Type type = typeof(TOwner);
-            MethodInfo? method = type.GetMethod(functionName);
+            MethodInfo? method = owningType.GetMethod(functionName);
 
             if(method == null)
             {
@@ -73,7 +75,7 @@ namespace PluginPantry
 
             PluginAction action = new PluginAction()
             {
-                Instance = instance,
+                Instance = owningInstance,
                 Method = method,
                 PluginId = pluginId
             };
@@ -91,6 +93,62 @@ namespace PluginPantry
         }
 
 
+
+        public IEnumerable<ActionResult> RunAction<TAction>(TAction model)
+        {
+            foreach (var action in ActionTable<TAction>.ForPluginContext(this).GetActions())
+            {
+                ActionResult result;
+                try
+                {
+                    var returnVal = Util.TryInvokeMatchingMethod(action.Method, action.Instance, model);
+                    if (returnVal.Status != MethodInvocationResults.Succeeded)
+                    {
+                        throw new PluginException($"Failed to execute action for plugin {action.PluginId}.");
+                    }
+
+                    result = new ActionResult
+                    {
+                        Exception = null,
+                        ReturnValue = returnVal.ReturnVal,
+                    };
+                }
+                catch (Exception ex)
+                {
+                    result = new ActionResult
+                    { Exception = ex };
+                }
+                yield return result;
+            }
+        }
+
+        public void RunAction<TAction>(TAction model, Action<ActionResult> onActionComplete)
+        {
+            foreach (var action in ActionTable<TAction>.ForPluginContext(this).GetActions())
+            {
+                ActionResult result;
+                try
+                {
+                    var returnVal = Util.TryInvokeMatchingMethod(action.Method, action.Instance, model);
+                    if (returnVal.Status != MethodInvocationResults.Succeeded)
+                    {
+                        throw new PluginException($"Failed to execute action for plugin {action.PluginId}.");
+                    }
+
+                    result = new ActionResult
+                    {
+                        Exception = null,
+                        ReturnValue = returnVal.ReturnVal
+                    };
+                }
+                catch (Exception ex)
+                {
+                    result = new ActionResult
+                    { Exception = ex };
+                }
+                onActionComplete(result);
+            }
+        }
 
 
         public IEnumerable<ActionResult<TActionReturn>> RunAction<TAction, TActionReturn>(TAction model)

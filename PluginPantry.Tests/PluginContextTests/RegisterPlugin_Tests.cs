@@ -47,7 +47,7 @@ namespace PluginPantryTests.PluginContextTests
         {
             Plugins.EntryPoints.Called = false;
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginException>(() =>
             {
                 _context.RegisterPlugin(_loadedPlugins[1]);
             });
@@ -61,7 +61,7 @@ namespace PluginPantryTests.PluginContextTests
         {
             Plugins.EntryPoints.Called = false;
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginException>(() =>
             {
                 _context.RegisterPlugin(_loadedPlugins[0], "True");
             });
@@ -87,7 +87,7 @@ namespace PluginPantryTests.PluginContextTests
         {
             Plugins.EntryPoints.Called = false;
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<PluginException>(() =>
             {
                 _context.RegisterPlugin(_loadedPlugins[1], 0);
             });
