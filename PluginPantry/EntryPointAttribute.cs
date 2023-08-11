@@ -16,7 +16,7 @@ namespace PluginPantry
             Parameters = new KeyValuePair<string, string>[0];
         }
 
-        public EntryPointAttribute(params string[] args)
+        public EntryPointAttribute(string[] args)
         {
             if(args.Length % 2 != 0)
             {

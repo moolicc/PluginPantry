@@ -115,6 +115,7 @@ namespace PluginPantry
 
                     result = new ActionResult
                     {
+                        PluginId = action.PluginId,
                         Exception = null,
                         ReturnValue = returnVal.ReturnVal,
                     };
@@ -122,7 +123,10 @@ namespace PluginPantry
                 catch (Exception ex)
                 {
                     result = new ActionResult
-                    { Exception = ex };
+                    {
+                        PluginId = action.PluginId,
+                        Exception = ex
+                    };
                 }
                 yield return result;
             }
@@ -143,6 +147,7 @@ namespace PluginPantry
 
                     result = new ActionResult
                     {
+                        PluginId = action.PluginId,
                         Exception = null,
                         ReturnValue = returnVal.ReturnVal
                     };
@@ -150,7 +155,10 @@ namespace PluginPantry
                 catch (Exception ex)
                 {
                     result = new ActionResult
-                    { Exception = ex };
+                    {
+                        PluginId = action.PluginId,
+                        Exception = ex
+                    };
                 }
                 onActionComplete(result);
             }
@@ -172,6 +180,7 @@ namespace PluginPantry
 
                     result = new ActionResult<TActionReturn>
                     {
+                        PluginId = action.PluginId,
                         Exception = null,
                         ReturnValue = (TActionReturn?)returnVal.ReturnVal
                     };
@@ -179,7 +188,10 @@ namespace PluginPantry
                 catch (Exception ex)
                 {
                     result = new ActionResult<TActionReturn>
-                    { Exception = ex };
+                    {
+                        PluginId = action.PluginId,
+                        Exception = ex
+                    };
                 }
                 yield return result;
             }
@@ -200,6 +212,7 @@ namespace PluginPantry
 
                     result = new ActionResult<TActionReturn>
                     {
+                        PluginId = action.PluginId,
                         Exception = null,
                         ReturnValue = (TActionReturn?)returnVal.ReturnVal
                     };
@@ -207,7 +220,10 @@ namespace PluginPantry
                 catch (Exception ex)
                 {
                     result = new ActionResult<TActionReturn>
-                    { Exception = ex };
+                    {
+                        PluginId = action.PluginId,
+                        Exception = ex
+                    };
                 }
                 onActionComplete(result);
             }

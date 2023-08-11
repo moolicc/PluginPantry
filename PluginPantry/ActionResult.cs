@@ -8,6 +8,7 @@ namespace PluginPantry
 {
     public readonly record struct ActionResult<TReturn>
     {
+        public Guid PluginId { get; init; }
         public TReturn? ReturnValue { get; init; }
         public Exception? Exception { get; init; }
         public bool Success => Exception == null;
@@ -15,6 +16,7 @@ namespace PluginPantry
 
     public readonly record struct ActionResult
     {
+        public Guid PluginId { get; init; }
         public object? ReturnValue { get; init; }
         public Exception? Exception { get; init; }
         public bool Success => Exception == null;
